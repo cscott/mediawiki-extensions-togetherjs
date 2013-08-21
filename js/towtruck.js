@@ -7,7 +7,7 @@
 
   var styleSheet = "/towtruck/towtruck.css";
 
-  var baseUrl = "https://towtruck.mozillalabs.com";
+  var baseUrl = "http://towtruck.github.cscott.net";
   if (baseUrl == "__" + "baseUrl__") {
     // Reset the variable if it doesn't get substituted
     baseUrl = "";
@@ -384,7 +384,7 @@
     return "TowTruck";
   };
 
-  var defaultHubBase = "https://towtruck.mozillalabs.com";
+  var defaultHubBase = "http://wmftowtruck-8795.onmodulus.net";
   if (defaultHubBase == "https://towtruck.mozillalabs.com") {
     // Substitution wasn't made
     defaultHubBase = "https://hub.towtruck.mozillalabs.com";
