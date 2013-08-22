@@ -36,4 +36,9 @@
 			return false;
 		} );
 	}
+
+	// Hook visual editor, make sure we notice when it's created/destroyed
+	mw.hook( 've.activationComplete' ).add( tt.reinitialize.bind(tt) );
+	mw.hook( 've.deactivationComplete' ).add( tt.reinitialize.bind(tt) );
+
 }( mediaWiki, jQuery, TowTruck ) );

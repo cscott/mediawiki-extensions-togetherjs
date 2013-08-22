@@ -38,6 +38,7 @@ $wgResourceModules['towtruck'] = array_merge( array(
 $wgResourceModules['ext.towTruck'] = array_merge( array(
 	'scripts' => array(
 		'js/ext.towTruck.js',
+		'js/ext.towTruck.ve.js',
 	),
 
 	'dependencies' => array(
