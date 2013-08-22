@@ -18,13 +18,21 @@
  * @file
  * @ingroup extensions
  * @author Mark Holmquist <mtraceur@member.fsf.org>
- * @copyright Copyright © 2013, Mark Holmquist
+ * @author C. Scott Ananian <cscott@cscott.net>
+ * @copyright Copyright © 2013, Mark Holmquist and C. Scott Ananian
  */
 
 class TowTruckHooks {
 
-	// Add the towtruck scripts to the page so we can do cool things
-	static function getModules( $editPage, $output ) {
+	// Add the towtruck scripts to the edit page so we can do cool things
+	static function editGetModules( $editPage, $output ) {
+		$output->addModules( array( 'ext.towTruck' ) );
+
+		return true;
+	}
+	// Add the towtruck scripts to the article page so we can do cool things
+	static function articleGetModules( $article ) {
+		$output = $article->getContext()->getOutput();
 		$output->addModules( array( 'ext.towTruck' ) );
 
 		return true;

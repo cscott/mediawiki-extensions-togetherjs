@@ -16,12 +16,24 @@
  */
 
 ( function ( mw, $, tt ) {
-	$( function () {
-		var $button = $( '<a>' )
-			.attr( 'id', 'towtruck-start' )
-			.click( tt )
-			.text( 'Start TowTruck!' );
 
-		$( '#toolbar' ).append( $button );
-	} );
+	TowTruckConfig_toolName = mw.msg( 'towtruck-name' );
+	// add option to start tooltruck in a action tab
+	var pTabsId = $( '#p-views' ).length ? 'p-views' : 'p-cactions';
+	mw.util.addPortletLink( pTabsId, '#', mw.msg( 'towtruck-tab' ),
+	                       'ca-tt-start', mw.msg( 'towtruck-start' ) );
+	$( '#ca-tt-start' ).click( tt );
+
+	// add towtruck to edit source toolbar
+	if (mw.toolbar) {
+		mw.toolbar.addButton({
+			imageId: 'towtruck-button',
+			imageFile: 'http://towtruck.github.cscott.net/images/icn-logo-blk.png',
+			speedTip: mw.msg( 'towtruck-start' )
+		});
+		$( '#towtruck-button' ).click( function(event) {
+			tt(); // toggle towtruck
+			return false;
+		} );
+	}
 }( mediaWiki, jQuery, TowTruck ) );

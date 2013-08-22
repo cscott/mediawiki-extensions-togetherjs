@@ -18,7 +18,8 @@
  * @file
  * @ingroup extensions
  * @author Mark Holmquist <mtraceur@member.fsf.org>
- * @copyright Copyright © 2013, Mark Holmquist
+ * @author C. Scott Ananian <cscott@cscott.net)
+ * @copyright Copyright © 2013, Mark Holmquist and C. Scott Ananian
  */
 
 $moduleInfo = array(
@@ -42,10 +43,17 @@ $wgResourceModules['ext.towTruck'] = array_merge( array(
 	'dependencies' => array(
 		'towtruck',
 	),
+	'messages' => array(
+		'towtruck-name',
+		'towtruck-start',
+		'towtruck-tab',
+	),
 ), $moduleInfo );
 
 $wgAutoloadClasses['TowTruckHooks'] = __DIR__ . '/TowTruckHooks.php';
-$wgHooks['EditPage::showEditForm:initial'][] = 'TowTruckHooks::getModules';
+$wgHooks['EditPage::showEditForm:initial'][] = 'TowTruckHooks::editGetModules';
+$wgHooks['ArticleViewHeader'][] = 'TowTruckHooks::articleGetModules';
+$wgHooks['PageHistoryBeforeList'][] = 'TowTruckHooks::articleGetModules';
 
 $wgExtensionCredits['other'][] = array(
 	'path' => __FILE__,
@@ -54,6 +62,7 @@ $wgExtensionCredits['other'][] = array(
 	'version' => '0.1',
 	'author' => array(
 		'MarkTraceur (Mark Holmquist)',
+		'cscott (C. Scott Ananian)',
 	),
 	'url' => 'https://mediawiki.org/wiki/Extension:TowTruck',
 );
