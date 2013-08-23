@@ -72,8 +72,10 @@
 
 	// Find all instances of VE on this page.
 	VETracker.scan = function() {
-		return instances().map(function(surface) {
+		return instances().map(function(surface, idx) {
 			console.assert(surface.$.length === 1);
+			// add an ID (helps towtruck find this element)
+			surface.$[0].id = "ve-towtruck-" + idx;
 			// return the element associated with this Surface
 			return surface.$[0];
 		});
