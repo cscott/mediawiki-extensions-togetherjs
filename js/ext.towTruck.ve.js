@@ -94,12 +94,7 @@
 		}
 		TowTruck.addTracker(VETracker);
 	};
-
-	// Defer registration if TowTruck is not loaded yet.
-	if (TowTruck.require) {
-		registerTracker();
-	} else {
-		TowTruck.once('ready', registerTracker);
-	}
+	TowTruck.on('ready', registerTracker);
+	$( function() { mw.hook( 'towtruck.autostart' ).fire(); } );
 
 }( mediaWiki, jQuery, TowTruck ) );

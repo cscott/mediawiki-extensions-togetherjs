@@ -17,7 +17,6 @@
 
 ( function ( mw, $, tt ) {
 
-	TowTruckConfig_toolName = mw.msg( 'towtruck-name' );
 	// add option to start tooltruck in a action tab
 	var pTabsId = $( '#p-views' ).length ? 'p-views' : 'p-cactions';
 	mw.util.addPortletLink( pTabsId, '#', mw.msg( 'towtruck-tab' ),

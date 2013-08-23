@@ -31,7 +31,11 @@ $wgExtensionMessagesFiles['TowTruck'] = __DIR__ . '/TowTruck.i18n.php';
 
 $wgResourceModules['towtruck'] = array_merge( array(
 	'scripts' => array(
+		'js/ext.towTruck.config.js',
 		'js/towtruck.js',
+	),
+	'messages' => array(
+		'towtruck-name',
 	),
 ), $moduleInfo );
 
