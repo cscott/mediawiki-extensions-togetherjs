@@ -37,11 +37,37 @@
 		this.element = $(el);
 		this.surface = findVE(el);
 		console.assert(this.surface);
-		// XXX add change listener
+		// add change listener
+		this.surface.model.on('change', this._change, [], this);
 	};
-	VETracker.trackerName = "VisualEditor";
+	VETracker.prototype.trackerName = "VisualEditor";
+	VETracker.prototype.tracked = function(el) {
+		return this.element[0] === el;
+	};
 	VETracker.prototype.destroy = function(el) {
-		// XXX remove change listeners
+		// remove change listener
+		this.surface.model.off('change', this._change);
+	};
+	VETracker.prototype._change = function() {
+		console.log("VE _change");
+	};
+	VETracker.prototype.update = function(msg) {
+		console.log("VE update");
+		// XXX apply deltas
+	};
+	VETracker.prototype.init = function(update, msg) {
+		console.log("VE init");
+		// XXX initialize
+	};
+	VETracker.prototype.makeInit = function() {
+		console.log("VE makeInit");
+		var elementFinder = TowTruck.require("elementFinder");
+		var value = 'XXX';
+		return {
+			element: elementFinder.elementLocation(this.element),
+			tracker: this.trackerName,
+			value: value
+		};
 	};
 
 	// Find all instances of VE on this page.
@@ -62,11 +88,11 @@
 
 	// Register this tracker with TowTruck
 	var registerTracker = function() {
-		if (!TowTruck.trackers) {
+		if (!TowTruck.addTracker) {
 			console.warn("Can't register VE tracker, TowTruck is too old");
 			return;
 		}
-		TowTruck.trackers[VETracker.trackerName] = VETracker;
+		TowTruck.addTracker(VETracker);
 	};
 
 	// Defer registration if TowTruck is not loaded yet.
