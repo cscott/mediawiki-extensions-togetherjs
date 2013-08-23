@@ -52,9 +52,7 @@ $wgResourceModules['ext.towTruck'] = array_merge( array(
 ), $moduleInfo );
 
 $wgAutoloadClasses['TowTruckHooks'] = __DIR__ . '/TowTruckHooks.php';
-$wgHooks['EditPage::showEditForm:initial'][] = 'TowTruckHooks::editGetModules';
-$wgHooks['ArticleViewHeader'][] = 'TowTruckHooks::articleGetModules';
-$wgHooks['PageHistoryBeforeList'][] = 'TowTruckHooks::articleGetModules';
+$wgHooks['BeforePageDisplay'][] = 'TowTruckHooks::getModules';
 
 $wgExtensionCredits['other'][] = array(
 	'path' => __FILE__,

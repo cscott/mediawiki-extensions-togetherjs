@@ -24,16 +24,9 @@
 
 class TowTruckHooks {
 
-	// Add the towtruck scripts to the edit page so we can do cool things
-	static function editGetModules( $editPage, $output ) {
-		$output->addModules( array( 'ext.towTruck' ) );
-
-		return true;
-	}
-	// Add the towtruck scripts to the article page so we can do cool things
-	static function articleGetModules( $article ) {
-		$output = $article->getContext()->getOutput();
-		$output->addModules( array( 'ext.towTruck' ) );
+	// Add the towtruck scripts to the page so we can do cool things
+	static function getModules( $out, $skin ) {
+		$out->addModules( array( 'ext.towTruck' ) );
 
 		return true;
 	}
