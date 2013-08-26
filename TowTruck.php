@@ -34,6 +34,9 @@ $wgResourceModules['towtruck'] = array_merge( array(
 		'js/ext.towTruck.config.js',
 		'js/towtruck.js',
 	),
+	'dependencies' => array(
+		'mediawiki.user',
+	),
 	'messages' => array(
 		'towtruck-name',
 	),

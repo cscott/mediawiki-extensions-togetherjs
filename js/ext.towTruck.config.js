@@ -26,3 +26,7 @@ TowTruckConfig_callToStart = function(callback) {
 	};
 	hook.add( once );
 };
+TowTruckConfig_getUserName = function() {
+	if (mw.user.isAnon()) { return null; }
+	return mw.user.getName();
+};
