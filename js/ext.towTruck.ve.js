@@ -124,8 +124,9 @@
 		return result;
 	};
 	VETransProxy.prototype.transpose = function(transproxy) {
-		// XXX deep magic
-		console.assert(false, "transpose not implemented");
+		// Implemented in VE core.  Unwrap/wrap here.
+		return new VETransProxy(
+			this.transaction.transpose(transproxy.transaction));
 	};
 
 	// Create a VisualEditor tracker for TowTruck.
