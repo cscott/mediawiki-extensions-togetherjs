@@ -1,21 +1,21 @@
 /*
- * This file is part of the MediaWiki extension TowTruck.
+ * This file is part of the MediaWiki extension TogetherJS.
  *
- * TowTruck is free software: you can redistribute it and/or modify
+ * TogetherJS is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
  *
- * TowTruck is distributed in the hope that it will be useful,
+ * TogetherJS is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with TowTruck.  If not, see <http://www.gnu.org/licenses/>.
+ * along with TogetherJS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function ( mw, $, TowTruck ) {
+(function ( mw, $, TogetherJS ) {
 
 	// Get ve instances, without dying if ve is not defined on this page.
 	var instances = function() {
@@ -32,9 +32,9 @@
 		return found;
 	};
 
-	// Our subclass of TowTruck.ot.history
+	// Our subclass of TogetherJS.ot.history
 	var makeHistory = function(clientId, initState, initBasis) {
-		var history = TowTruck.require("ot").SimpleHistory(
+		var history = TogetherJS.require("ot").SimpleHistory(
 			clientId, initState, initBasis
 		);
 		// XXX override setSelection, etc?
@@ -129,7 +129,7 @@
 			this.transaction.transpose(transproxy.transaction));
 	};
 
-	// Create a VisualEditor tracker for TowTruck.
+	// Create a VisualEditor tracker for TogetherJS.
 	var VETracker = function(el) {
 		this.element = (el instanceof $) ? el[0] : el; // real DOM element
 		this.surface = findVE(el);
@@ -148,7 +148,7 @@
 		this.surface.model.on('change', this._change, [], this);
 
 		// create OT history object.
-		var clientId = TowTruck.require("session").clientId;
+		var clientId = TogetherJS.require("session").clientId;
 		var docproxy = new VEDocProxy(this);
 		docproxy.historyPointer =
 			this.documentModel.getCompleteHistoryLength();
@@ -182,7 +182,7 @@
 		if (!change) { return; /* nothing to send */ }
 
 		// Find a DOM path leading to this instance.
-		var elementFinder = TowTruck.require("elementFinder");
+		var elementFinder = TogetherJS.require("elementFinder");
 		var elementPath = elementFinder.elementLocation(this.element);
 
 		var msg = {
@@ -197,7 +197,7 @@
 				delta: change.delta.transaction
 			}
 		};
-		TowTruck.require("session").send(msg);
+		TogetherJS.require("session").send(msg);
 	};
 
 	VETracker.prototype.update = function(msg) {
@@ -225,7 +225,7 @@
 		if (value.revid !== this.revid) { return; }
 		// if basis matches, we don't need to sync further.
 		// (but if this.history.basis == 1, we might have outstanding edits
-		// from before we opened towtruck.  That's too bad, we need to wipe
+		// from before we opened togetherjs.  That's too bad, we need to wipe
 		// them out to resync with the peer we asked to join.)
 		if (value.basis === this.history.basis &&
 			this.history.basis !== 1) {
@@ -254,7 +254,7 @@
 	VETracker.prototype.makeInit = function() {
 
 		// Find a DOM path leading to this instance.
-		var elementFinder = TowTruck.require("elementFinder");
+		var elementFinder = TogetherJS.require("elementFinder");
 		var elementPath = elementFinder.elementLocation(this.element);
 
 		// Now get the current state of the editor.  We're going to do
@@ -291,8 +291,8 @@
 	VETracker.scan = function() {
 		return instances().map(function(surface, idx) {
 			console.assert(surface.$.length === 1);
-			// add an ID (helps towtruck find this element)
-			surface.$[0].id = "ve-towtruck-" + idx;
+			// add an ID (helps togetherjs find this element)
+			surface.$[0].id = "ve-togetherjs-" + idx;
 			// return the element associated with this Surface
 			return surface.$[0];
 		});
@@ -305,15 +305,15 @@
 		});
 	};
 
-	// Register this tracker with TowTruck
+	// Register this tracker with TogetherJS
 	var registerTracker = function() {
-		if (!TowTruck.addTracker) {
-			console.warn("Can't register VE tracker, TowTruck is too old");
+		if (!TogetherJS.addTracker) {
+			console.warn("Can't register VE tracker, TogetherJS is too old");
 			return;
 		}
-		TowTruck.addTracker(VETracker);
+		TogetherJS.addTracker(VETracker);
 	};
-	TowTruck.on('ready', registerTracker);
-	$( function() { mw.hook( 'towtruck.autostart' ).fire(); } );
+	TogetherJS.on('ready', registerTracker);
+	$( function() { mw.hook( 'togetherjs.autostart' ).fire(); } );
 
-}( mediaWiki, jQuery, TowTruck ) );
+}( mediaWiki, jQuery, TogetherJS ) );
