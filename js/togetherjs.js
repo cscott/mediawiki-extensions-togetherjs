@@ -408,7 +408,7 @@
     return "TogetherJS";
   };
 
-  var defaultHubBase = "//greenlake.wmflabs.org";
+  var defaultHubBase = "https://greenlake.wmflabs.org";
   if (defaultHubBase == "__" + "hubUrl"+ "__") {
     // Substitution wasn't made
     defaultHubBase = "https://hub.togetherjs.mozillalabs.com";
