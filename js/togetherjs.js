@@ -7,7 +7,7 @@
 
   var styleSheet = "/togetherjs/togetherjs.css";
 
-  var baseUrl = "http://togetherjs.github.cscott.net/";
+  var baseUrl = "https://pinklake.wmflabs.org/extensions/TogetherJS/togetherjs";
   if (baseUrl == "__" + "baseUrl__") {
     // Reset the variable if it doesn't get substituted
     baseUrl = "";
@@ -41,13 +41,19 @@
       configOverride = null;
     }
     if ((! configOverride) || configOverride.expiresAt < Date.now()) {
-      localStorage.removeItem("togetherjs.cnofigOverride");
+      localStorage.removeItem("togetherjs.configOverride");
     } else {
+      var shownAny = false;
       for (var attr in configOverride) {
         if (attr == "expiresAt" || ! configOverride.hasOwnProperty(attr)) {
           continue;
         }
+        if (! shownAny) {
+          console.warn("Using TogetherJS configOverride");
+          console.warn("To undo run: localStorage.removeItem('togetherjs.configOverride')");
+        }
         window["TogetherJSConfig_" + attr] = configOverride[attr];
+        console.log("Config override:", attr, "=", configOverride[attr]);
       }
     }
   }
@@ -123,6 +129,14 @@
     } catch (e) {
       console.warn("Error determining starting button:", e);
     }
+    if (window.TowTruckConfig) {
+      console.warn("TowTruckConfig is deprecated; please use TogetherJSConfig");
+      if (window.TogetherJSConfig) {
+        console.warn("Ignoring TowTruckConfig in favor of TogetherJSConfig");
+      } else {
+        window.TogetherJSConfig = TowTruckConfig;
+      }
+    }
     if (window.TogetherJSConfig && (! window.TogetherJSConfig.loaded)) {
       TogetherJS.config(window.TogetherJSConfig);
       window.TogetherJSConfig.loaded = true;
@@ -141,7 +155,17 @@
       } else if (attr.indexOf("TogetherJSConfig_") === 0) {
         attrName = attr.substr(("TogetherJSConfig_").length);
         TogetherJS.config(attrName, window[attr]);
+      } else if (attr.indexOf("TowTruckConfig_on_") === 0) {
+        attrName = attr.substr(("TowTruckConfig_on_").length);
+        console.warn("TowTruckConfig_* is deprecated, please rename", attr, "to TogetherJSConfig_on_" + attrName);
+        globalOns[attrName] = window[attr];
+      } else if (attr.indexOf("TogetherJSConfig_") === 0) {
+        attrName = attr.substr(("TogetherJSConfig_").length);
+        console.warn("TowTruckConfig_* is deprecated, please rename", attr, "to TogetherJSConfig_" + attrName);
+        TogetherJS.config(attrName, window[attr]);
       }
+
+
     }
     // FIXME: copy existing config?
     var ons = TogetherJS.getConfig("on");
@@ -192,10 +216,6 @@
     var requireConfig = TogetherJS._extend(TogetherJS.requireConfig);
     var deps = ["session", "jquery"];
     function callback(session, jquery) {
-      // Though jquery uses requirejs, it also always also defines a
-      // global, so we have to keep it from conflicting with any
-      // previous jquery:
-      jquery.noConflict(true);
       TogetherJS._loaded = true;
       if (! min) {
         TogetherJS.require = require.config({context: "togetherjs"});
@@ -271,9 +291,7 @@
       esprima: "libs/walkabout/lib/esprima",
       falafel: "libs/walkabout/lib/falafel",
       tinycolor: "libs/tinycolor",
-      whrandom: "libs/whrandom/random",
-      jqueryui: "libs/jquery-ui.min",
-      jquerypunch: "libs/jquery.ui.touch-punch.min"
+      whrandom: "libs/whrandom/random"
     }
   };
 
@@ -390,7 +408,7 @@
     return "TogetherJS";
   };
 
-  var defaultHubBase = "http://wmftowtruck-8795.onmodulus.net";
+  var defaultHubBase = "https://greenlake.wmflabs.org";
   if (defaultHubBase == "__" + "hubUrl"+ "__") {
     // Substitution wasn't made
     defaultHubBase = "https://hub.togetherjs.mozillalabs.com";
@@ -401,6 +419,8 @@
     // Experimental feature to echo clicks to certain elements across clients:
     cloneClicks: false,
     // Enable Mozilla or Google analytics on the page when TogetherJS is activated:
+    // FIXME: these don't seem to be working, and probably should be removed in favor
+    // of the hub analytics
     enableAnalytics: false,
     // The code to enable (this is defaulting to a Mozilla code):
     analyticsCode: "UA-35433268-28",
@@ -438,7 +458,11 @@
     // If true, then the "Invite a friend" window won't automatically come up
     suppressInvite: false,
     // A room in which to find people to invite to this session,
-    inviteFromRoom: null
+    inviteFromRoom: null,
+    // This is used to keep sessions from crossing over on the same
+    // domain, if for some reason you want sessions that are limited
+    // to only a portion of the domain:
+    storagePrefix: "togetherjs"
   };
   // FIXME: there's a point at which configuration can't be updated
   // (e.g., hubBase after the TogetherJS has loaded).  We should keep
@@ -635,6 +659,10 @@
     }
     // A page can define this function to defer TogetherJS from starting
     var callToStart = window.TogetherJSConfig_callToStart;
+    if (! callToStart && window.TowTruckConfig_callToStart) {
+      callToStart = window.TowTruckConfig_callToStart;
+      console.warn("Please rename TowTruckConfig_callToStart to TogetherJSConfig_callToStart");
+    }
     if (window.TogetherJSConfig && window.TogetherJSConfig.callToStart) {
       callToStart = window.TogetherJSConfig.callToStart;
     }
@@ -677,5 +705,8 @@
   if (window.TogetherJSConfig_enableShortcut) {
     TogetherJS.listenForShortcut();
   }
+
+  // For compatibility:
+  window.TowTruck = TogetherJS;
 
 })();
