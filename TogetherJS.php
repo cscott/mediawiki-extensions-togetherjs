@@ -67,8 +67,8 @@ $wgExtensionCredits['other'][] = array(
 	'descriptionmsg' => 'togetherjs-desc',
 	'version' => '0.1',
 	'author' => array(
-		'MarkTraceur (Mark Holmquist)',
-		'cscott (C. Scott Ananian)',
+		'C. Scott Ananian',
+		'Mark Holmquist',
 	),
 	'url' => 'https://mediawiki.org/wiki/Extension:TogetherJS',
 );
