@@ -27,7 +27,7 @@
 	if (mw.toolbar) {
 		mw.toolbar.addButton({
 			imageId: 'togetherjs-button',
-			imageFile: 'http://togetherjs.github.cscott.net/images/site-features-user-presence.png',
+			imageFile: '//pinklake.wmflabs.org/extensions/TogetherJS/togetherjs/images/togetherjs-logo.png',
 			speedTip: mw.msg( 'togetherjs-start' )
 		});
 		$( '#togetherjs-button' ).click( function(event) {
