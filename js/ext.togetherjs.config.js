@@ -16,17 +16,28 @@
  */
 
 /* TogetherJS configuration; loaded *before* TogetherJS loads. */
-TogetherJSConfig_toolName = mw.msg( 'togetherjs-name' );
-TogetherJSConfig_callToStart = function(callback) {
-	// defer loading of TogetherJS until after mw loads.
-	var hook = mw.hook( 'togetherjs.autostart' );
-	var once = function() {
-		hook.remove(once);
-		callback();
-	};
-	hook.add( once );
-};
-TogetherJSConfig_getUserName = function() {
-	if (mw.user.isAnon()) { return null; }
-	return mw.user.getName();
+TogetherJSConfig = {
+	toolName: mw.msg( 'togetherjs-name' ),
+	baseUrl: mw.config.get( 'wgServer' ) +
+		mw.config.get( 'wgExtensionAssetsPath' ) +
+		'/TogetherJS',
+	hubBase: 'https://togetherjs-hub.wmflabs.org',
+	lang: (function(lang) {
+		// re-map language codes to those supported by togetherJS
+		if (/^ru/.test(lang)) return "ru";
+		return "en-US";
+	})(mw.config.get( 'wgUserLanguage' )),
+	callToStart: function(callback) {
+		// defer loading of TogetherJS until after mw loads.
+		var hook = mw.hook( 'togetherjs.autostart' );
+		var once = function() {
+			hook.remove(once);
+			callback();
+		};
+		hook.add( once );
+	},
+	getUserName: function() {
+		if (mw.user.isAnon()) { return null; }
+		return mw.user.getName();
+	}
 };
