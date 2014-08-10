@@ -70,6 +70,8 @@
     ignoreMessages: ["cursor-update", "keydown", "scroll-update"],
     // Ignores the following forms (will ignore all forms if set to true):
     ignoreForms: [":password"],
+    // When undefined, attempts to use the browser's language
+    lang: undefined,
     fallbackLang: "en_US"
   };
 
@@ -88,6 +90,7 @@
   if (window.TogetherJSConfig_baseUrl) {
     baseUrl = window.TogetherJSConfig_baseUrl;
   }
+  defaultConfiguration.baseUrl = baseUrl;
 
   // True if this file should use minimized sub-resources:
   var min = "no" == "__" + "min__" ? false : "no" == "yes";
