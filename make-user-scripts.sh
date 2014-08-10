@@ -34,6 +34,9 @@ if (window.TOGETHERJS_BETA) {
 	// crazy experimental stuff
 	TogetherJSConfig.baseUrl += '-Beta';
 	TogetherJSConfig.useMinimizedCode = false;
+} else {
+	// actually, always use the new togetherjs (for now)
+	TogetherJSConfig.baseUrl += '-Beta';
 }
 EOF
 

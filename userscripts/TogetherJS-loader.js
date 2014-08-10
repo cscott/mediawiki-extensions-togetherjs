@@ -36,6 +36,8 @@ if (window.TOGETHERJS_BETA) {
     siteName: null,
     // Whether to use the minimized version of the code (overriding the built setting)
     useMinimizedCode: undefined,
+    // Append cache-busting queries (useful for development!)
+    cacheBust: true,
     // Any events to bind to
     on: {},
     // Hub events to bind to
@@ -78,7 +80,7 @@ if (window.TOGETHERJS_BETA) {
     ignoreForms: [":password"],
     // When undefined, attempts to use the browser's language
     lang: undefined,
-    fallbackLang: "en_US"
+    fallbackLang: "en-US"
   };
 
   var styleSheet = "/togetherjs/togetherjs.css";
@@ -195,20 +197,23 @@ if (window.TOGETHERJS_BETA) {
       var link = document.createElement("link");
       link.id = "togetherjs-stylesheet";
       link.setAttribute("rel", "stylesheet");
-      link.href = baseUrl + styleSheet + "?bust=" + cacheBust;
+      link.href = baseUrl + styleSheet +
+	(cacheBust ? ("?bust=" + cacheBust) : '');
       document.head.appendChild(link);
     }
   }
 
   function addScript(url) {
     var script = document.createElement("script");
-    script.src = baseUrl + url + "?bust=" + cacheBust;
+    script.src = baseUrl + url +
+      (cacheBust ? ("?bust=" + cacheBust) : '');
     document.head.appendChild(script);
   }
 
   var TogetherJS = window.TogetherJS = function TogetherJS(event) {
+    var session;
     if (TogetherJS.running) {
-      var session = TogetherJS.require("session");
+      session = TogetherJS.require("session");
       session.close();
       return;
     }
@@ -287,6 +292,10 @@ if (window.TOGETHERJS_BETA) {
         }
       }
     }
+    if (!TogetherJS.config.close('cacheBust')) {
+      cacheBust = '';
+      delete TogetherJS.requireConfig.urlArgs;
+    }
 
     if (! TogetherJS.startup.reason) {
       // Then a call to TogetherJS() from a button must be started TogetherJS
@@ -295,7 +304,7 @@ if (window.TOGETHERJS_BETA) {
 
     // FIXME: maybe I should just test for TogetherJS.require:
     if (TogetherJS._loaded) {
-      var session = TogetherJS.require("session");
+      session = TogetherJS.require("session");
       addStyle();
       session.start();
       return;
@@ -316,22 +325,28 @@ if (window.TOGETHERJS_BETA) {
     // [igoryen]: We should generate this value in Gruntfile.js, based on the available translations
     var availableTranslations = {
       "en-US": true,
+      "en": "en-US",
+      "es": "es-BO",
+      "es-BO": true,
       "ru": true,
-      "ru-RU": true
+      "ru-RU": "ru"
     };
 
     if(lang === undefined) {
-      var navigatorLang = navigator.language.replace(/_/g, "-");
-      if (!availableTranslations[navigatorLang]) {
-        lang = TogetherJS.config.get("fallbackLang");
-      } else {
-        lang = navigatorLang;
-      }
-     TogetherJS.config("lang", lang);
+      // BCP 47 mandates hyphens, not underscores, to separate lang parts
+      lang = navigator.language.replace(/_/g, "-");
     }
+    if (/-/.test(lang) && !availableTranslations[lang]) {
+      lang = lang.replace(/-.*$/, '');
+    }
+    if (!availableTranslations[lang]) {
+      lang = TogetherJS.config.get("fallbackLang");
+    } else if (availableTranslations[lang] !== true) {
+      lang = availableTranslations[lang];
+    }
+    TogetherJS.config("lang", lang);
 
-    TogetherJS.config("lang", lang.replace(/_/g, "-")); // rename into TogetherJS.config.get()?
-    var localeTemplates = "templates-" + lang;// rename into TogetherJS.config.get()?
+    var localeTemplates = "templates-" + lang;
     deps.splice(0, 0, localeTemplates);
     function callback(session, jquery) {
       TogetherJS._loaded = true;
@@ -408,7 +423,7 @@ if (window.TOGETHERJS_BETA) {
     baseUrl: baseUrl + "/togetherjs",
     urlArgs: "bust=" + cacheBust,
     paths: {
-      jquery: "libs/jquery-1.8.3.min",
+      jquery: "libs/jquery-1.11.1.min",
       walkabout: "libs/walkabout/walkabout",
       esprima: "libs/walkabout/lib/esprima",
       falafel: "libs/walkabout/lib/falafel",
@@ -640,14 +655,15 @@ if (window.TOGETHERJS_BETA) {
     }
     var i;
     var tracker;
-    for (var attr in settings) {
+    var attr;
+    for (attr in settings) {
       if (settings.hasOwnProperty(attr)) {
         if (TogetherJS._configClosed[attr] && TogetherJS.running) {
           throw new Error("The configuration " + attr + " is finalized and cannot be changed");
         }
       }
     }
-    for (var attr in settings) {
+    for (attr in settings) {
       if (! settings.hasOwnProperty(attr)) {
         continue;
       }
@@ -716,6 +732,7 @@ if (window.TOGETHERJS_BETA) {
       throw new Error("Configuration is unknown: " + name);
     }
     TogetherJS._configClosed[name] = true;
+    return this.get(name);
   };
 
   TogetherJS.reinitialize = function () {
