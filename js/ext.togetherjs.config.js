@@ -22,6 +22,9 @@ TogetherJSConfig = {
 		mw.config.get( 'wgExtensionAssetsPath' ) +
 		'/TogetherJS',
 	hubBase: 'https://togetherjs-hub.wmflabs.org',
+	// For ACE compatibility, use minimized code.  Otherwise TogetherJS
+	// wants to define `window.require`, which apparently ACE also uses.
+	useMinimizedCode: true,
 	lang: (function(lang) {
 		// re-map language codes to those supported by togetherJS
 		if (/^ru/.test(lang)) return "ru";
