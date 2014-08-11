@@ -6,13 +6,10 @@ $("#fixture").append('<br>');
 $("#fixture").append('<div><label for="yes"><input type="radio" name="answer" id="yes"> Yes</label><label for="no"><input type="radio" name="answer" id="no"> No</label></div>');
 $("#fixture").append('<input type="password" id="password" value="test">');
 
-Test.require("forms", "session", "ui", "windowing", "eventMaker");
+Test.require("forms", "session", "ui", "windowing", "eventMaker", "templates-en-US");
 // => Loaded modules: ...
 
-printChained(
-  Test.resetSettings(),
-  Test.startTogetherJS(),
-  Test.closeWalkthrough());
+Test.normalStartup();
 // =>...
 
 var fireChange = eventMaker.fireChange;
@@ -94,6 +91,7 @@ send: form-update
   "server-echo": true
 */
 
+$textarea.focus();
 select(3, 4);
 selection();
 
@@ -149,16 +147,93 @@ send: form-update
 
 select(3, 4);
 
+var myAuthority;
+Test.viewSend.once("form-init", function(msg) {
+  myAuthority = msg.authority;
+});
+Test.waitMessage("form-focus");
+Test.newPeer();
+// Note that the client will ignore this update, until it hears
+// its own form-init echoed back.  This ensures that the peer
+// doesn't initialize to a stale state.
 Test.incoming({
-  type: "hello",
   clientId: "faker",
-  url: location.href.replace(/\#.*/, ""),
-  urlHash: "",
-  name: "Faker",
-  avatar: "//" + location.host + "/togetherjs/images/robot-avatar.png",
-  color: "#ff0000",
-  title: document.title,
-  rtcSupported: false
+  type: 'form-update',
+  element: "#textarea",
+  replace: {
+    basis: 4,
+    delta: {
+      start: 1,
+      del: 1,
+      text: "ey"
+    }
+  }
+});
+
+/* =>
+
+send: hello-back...
+send: form-init
+  authority: [...],
+  clientId: "me",
+  requester: [
+    "faker",
+    "helloid"
+  ],
+  "server-echo": true,
+  updates: [
+    {
+      basis: 4,
+      element: "#textarea",
+      value: "hi there"
+    },
+    {
+      element: "#yes",
+      value: false
+    },
+    {
+      element: "#no",
+      value: true
+    }
+  ]
+send: form-focus...
+*/
+
+print($textarea.val());
+selection();
+print(myAuthority);
+
+/* =>
+hi there
+selected 3 - 4
+[...]
+*/
+
+// Now echo back the form-init message, followed by a retransmit of the
+// previous update.  This time it will be applied.
+
+Test.incoming({
+  clientId: "me",
+  type: "form-init",
+  requester: ["faker","helloid"],
+  authority: myAuthority,
+  "sever-echo": true,
+  element: "#textarea",
+  updates: [
+    {
+      basis: 4,
+      element: "#textarea",
+      value: "hi there"
+    },
+    {
+      element: "#yes",
+      value: false
+    },
+    {
+      element: "#no",
+      value: true
+    }
+  ]
 });
 Test.incoming({
   clientId: "faker",
@@ -173,30 +248,10 @@ Test.incoming({
     }
   }
 });
-wait(100);
+wait(function() { return $textarea.val()==='hey there'; });
 
 /* =>
-
-send: hello-back...
-send: form-init
-  clientId: "me",
-  pageAge: ?,
-  updates: [
-    {
-      basis: 5,
-      element: "#textarea",
-      value: "hey there"
-    },
-    {
-      element: "#yes",
-      value: false
-    },
-    {
-      element: "#no",
-      value: true
-    }
-  ]
-*/
+ */
 
 print($textarea.val());
 selection();
@@ -218,7 +273,7 @@ Test.incoming({
     }
   }
 });
-wait(100);
+wait(function() { return $textarea.val()==='hELLO there'; });
 
 // =>
 
@@ -230,21 +285,24 @@ hELLO there
 selected 0 - 7
 */
 
-// form-init should be ignored in some cases...
-print(Date.now() - TogetherJS.pageLoaded > 10);
+// unsolicited form-init should be ignored...
 Test.incoming({
   clientId: "faker",
   type: "form-init",
-  pageAge: 10,
+  requester: "faker",
+  authority: [0,0],
+  "server-echo": true,
   updates: [
-    {element: "#textarea",
-     value: "foo"
+    {
+      basis: 6,
+      element: "#textarea",
+      value: "foo"
     }
   ]
 });
 wait(100);
 
-// => true
+// =>
 
 print($textarea.val());
 

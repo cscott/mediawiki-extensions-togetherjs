@@ -124,7 +124,8 @@ Test.newPeer = function (options) {
     url: options.url || location.href.replace(/#.*/, ""),
     urlHash: options.urlHash || "",
     title: document.title,
-    rtcSupported: false
+    rtcSupported: false,
+    id: options.id || "helloid"
   };
   Test.incoming(msg);
 };
@@ -150,7 +151,8 @@ Test.resetSettings = function () {
       storage.settings.set("color", "#00ff00"),
       storage.settings.set("seenIntroDialog", undefined),
       storage.settings.set("seenWalkthrough", undefined),
-      storage.settings.set("dontShowRtcInfo", undefined)
+      storage.settings.set("dontShowRtcInfo", undefined),
+      storage.tab.set("chatlog", undefined)
     ).then(function () {
       def.resolve("Settings reset");
     });
@@ -163,7 +165,15 @@ Test.startTogetherJS = function () {
     Test.viewSend();
     session.once("ui-ready", function () {
       session.clientId = "me";
-      def.resolve("TogetherJS started");
+      // wait for init-connection to be received
+      var check = function() {
+	if (session.timestamp !== null) {
+	  def.resolve("TogetherJS started");
+	} else {
+	  setTimeout(check, 100);
+	}
+      };
+      check();
     });
     TogetherJS.startup._launch = true;
     TogetherJS();
@@ -191,9 +201,9 @@ Test.closeWalkthrough = function () {
 
 Test.normalStartup = function () {
   printChained(
-    Test.resetSettings(),
-    Test.startTogetherJS(),
-    Test.closeWalkthrough());
+    Test.resetSettings,
+    Test.startTogetherJS,
+    Test.closeWalkthrough);
 };
 
 function printChained() {
@@ -205,7 +215,9 @@ function printChained() {
       done = true;
       return;
     }
-    args[index].then(function () {
+    var f = args[index];
+    if (!f.then) { f = f(); }
+    f.then(function () {
       if (! arguments.length) {
         print("(done)");
       } else {

@@ -285,7 +285,9 @@ define(["util"], function (util) {
 
     // Apply a delta received from the server.
     // Return true iff the current text changed as a result.
-    commit: function(change) {
+    // If deferUpdate is true, decline to apply any change, but
+    // (if it is valid and ours) requeue it to resend.
+    commit: function(change, deferUpdate) {
 
       // ignore it if the basis doesn't match (this patch doesn't apply)
       // if so, this delta is out of order; we expect the original client
@@ -297,6 +299,11 @@ define(["util"], function (util) {
       // is this the first thing on the queue?
       if (this.queue.length && this.queue[0].id === change.id) {
         assert(change.basis === this.queue[0].basis);
+        if (deferUpdate) {
+          // defer this update, but queue to resend
+          this.queue[0].sent = false;
+          return false; // 'current' text did not change
+        }
         // good, apply this to commit state & remove it from queue
         this.committed = this.queue.shift().delta.apply(this.committed);
         this.basis++;
@@ -304,6 +311,13 @@ define(["util"], function (util) {
           this.queue[0].basis = this.basis;
         }
         return false; // 'current' text did not change
+      }
+
+      if (deferUpdate) {
+	// this *would* be a valid update from our peer,
+	// but they will resend it later.
+	// (and maybe our update will win the race next time.)
+	return false; // 'current' text did not change
       }
 
       // Transpose all bits on the queue to put this patch first.

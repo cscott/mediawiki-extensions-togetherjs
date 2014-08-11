@@ -23,6 +23,8 @@ define(["require", "util", "channels", "jquery", "storage"], function (require, 
   session.router = channels.Router();
   // Indicates if TogetherJS has just started (not continuing from a saved session):
   session.firstRun = false;
+  // Session "age", from the server:
+  session.timestamp = null;
 
   // This is the key we use for localStorage:
   var localStoragePrefix = "togetherjs.";
@@ -104,6 +106,9 @@ define(["require", "util", "channels", "jquery", "storage"], function (require, 
     console.info("Connecting to", session.hubUrl(), location.href);
     var c = channels.WebSocketChannel(session.hubUrl());
     c.onmessage = function (msg) {
+      if (msg.type==='init-connection') {
+	session.timestamp = msg["server-time"];
+      }
       if (! readyForMessages) {
         if (DEBUG) {
           console.info("In (but ignored for being early):", msg);

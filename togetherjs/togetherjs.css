@@ -348,7 +348,7 @@ input.togetherjs-upload-avatar {
 }
 .togetherjs-cancel {
   display: inline-block;
-  background: inherit;
+  background-color: #0095dd;
   border: none;
   padding: 3px 0px;
   margin: 0px 0px 0px;
@@ -379,6 +379,7 @@ input.togetherjs-upload-avatar {
   position: relative;
   width: 60px;
   height: 60px;
+  background-color: #0095dd;
   background-size: 40px 40px;
   background-repeat: no-repeat;
   background-position: center;
@@ -620,6 +621,7 @@ input.togetherjs-upload-avatar {
   float: right;
   font-weight: bold;
   cursor: pointer;
+  background-color: #0095dd;
   background-image: url('./images/icon-close@2x.png');
   background-position: center center;
   background-repeat: no-repeat;
@@ -744,6 +746,7 @@ input.togetherjs-upload-avatar {
   float: right;
   font-weight: bold;
   cursor: pointer;
+  background-color: #0095dd;
   background-image: url('./images/icon-close@2x.png');
   background-position: center center;
   background-repeat: no-repeat;
@@ -1471,6 +1474,7 @@ section.togetherjs-buttons .togetherjs-same-url {
   float: right;
   font-weight: bold;
   cursor: pointer;
+  background-color: #0095dd;
   background-image: url('./images/icon-close@2x.png');
   background-position: center center;
   background-repeat: no-repeat;
