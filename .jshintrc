@@ -1,0 +1,38 @@
+{
+	// JSHint configurations for node-jshint.
+	// install with "npm install -g jshint"
+
+	"predef": [
+		"mediaWiki",
+		"ve",
+		"TogetherJSConfig",
+		"TogetherJS",
+		"jQuery"
+	],
+
+	"bitwise": true,
+	"curly": true,
+	"eqeqeq": true,
+	"forin": true,
+	"immed": true,
+	"latedef": true,
+	"newcap": true,
+	"noarg": true,
+	"noempty": true,
+	"nonew": true,
+	"regexp": false,
+	"undef": true,
+	"unused": "vars",
+	"strict": true,
+	"trailing": true,
+
+	"smarttabs": true,
+	"multistr": true,
+
+	"es3": true,
+	"browser": true,
+
+	"nomen": false,
+	"loopfunc": true
+	//"onevar": true
+}
